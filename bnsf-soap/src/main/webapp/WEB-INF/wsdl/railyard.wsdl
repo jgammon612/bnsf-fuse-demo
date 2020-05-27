@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions name="railyardService" 
+                  targetNamespace="http://examples.bnsf.com/railyard"
+	              xmlns="http://schemas.xmlsoap.org/wsdl/" 
+	              xmlns:tns="http://examples.bnsf.com/railyard"
+	              xmlns:xsd1="http://examples.bnsf.com/railyard.xsd"
+	              xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	              xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	              xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<!-- wsdl:types :: Defines the XML schema and data types used by the web service -->
+	<wsdl:types>
+		<xsd:schema targetNamespace="http://examples.bnsf.com/railyard.xsd" 
+		            xmlns="http://examples.bnsf.com/railyard" 
+		            xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+		            elementFormDefault="qualified" >
+		            
+			<xsd:element name="RailyardData" >
+				<xsd:complexType>
+					<xsd:sequence>
+						<xs:element name="yardid"          type="xs:int" />
+                        <xs:element name="yardname"        type="xs:string" />
+                        <xs:element name="railcarid"       type="xs:string" />
+                        <xs:element name="railcartype"     type="xs:string" />
+                        <xs:element name="linkid"          type="xs:int" />
+                        <xs:element name="linkfromstation" type="xs:string" />
+                        <xs:element name="linktostation"   type="xs:string" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+	</wsdl:types>
+
+	<!-- wsdl:message :: Defines the data for input and output operation -->
+	<wsdl:message name="getRailyardRequest">
+		<wsdl:part name="body"  element="xsd1:RailyardData"/>
+	</wsdl:message>
+	<wsdl:message name="getRailyardResponse">
+		<wsdl:part name="body" element="xsd1:RailyardData"/>
+	</wsdl:message>
+
+	<!-- wsdl:portType :: Defines input and output operations that can be performed with the service -->
+	<wsdl:portType name="RailyardPortType">
+		<wsdl:operation name="getRailyardInfo">
+			<wsdl:input message="tns:getRailyardRequest" name="getRailyardRequest"/>
+			<wsdl:output message="tns:getRailyardResponse" name="getRailyardResponse"/>
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<!-- wsdl:binding :: Defines the protocol and data format for each port type  use="literal"-->
+	<wsdl:binding name="RailyardServiceSoapBinding" type="tns:RailyardPortType">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getRailyardInfo">
+			<soap:operation soapAction="http://examples.bnsf.com/railyard" />
+			<wsdl:input name="getRailyardRequest">
+				<soap:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="getRailyardResponse">
+				<soap:body  use="literal"/>
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+	
+	<!-- wsdl:service :: Defines service details -->
+	<wsdl:service name="railyardService">
+		<wsdl:port binding="tns:RailyardServiceSoapBinding" name="railyardServicePort">
+			<soap:address location="http://localhost:9000/railyard/railyardPort" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
