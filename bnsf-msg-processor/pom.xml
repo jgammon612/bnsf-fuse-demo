@@ -9,6 +9,7 @@
    </parent>
 
   <artifactId>bnsf-msg-processor</artifactId>
+  <name>BNSF CAMEL MESSAGE PROCESSOR</name>
   
  <dependencies>
     <dependency>

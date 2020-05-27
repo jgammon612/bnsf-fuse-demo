@@ -31,6 +31,7 @@
   
   <modules>
     <module>bnsf-soap</module>
+    <module>bnsf-msg-processor</module>
   </modules>
   
   <properties>
