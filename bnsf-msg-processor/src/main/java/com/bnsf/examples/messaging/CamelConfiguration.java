@@ -6,6 +6,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+import org.apache.camel.ExchangePattern;
+
+
+
+import com.bnsf.examples.railyard.RailyardData;
 
 @Component
 public class CamelConfiguration extends RouteBuilder {
@@ -18,8 +23,13 @@ public class CamelConfiguration extends RouteBuilder {
   
   @Override
   public void configure() throws Exception {
+	
 	  from("cxf:/railyard?serviceClass=com.bnsf.examples.railyard.RailyardPortType&loggingFeatureEnabled=true")
-	   .log("Picked up message: [${body}]");
+	  .setBody().simple("${body[0].value}")
+	  .log("set message body up: [ ${body} ]")
+	  .marshal().jaxb()
+	  .log("finished jaxb: [ ${body} ]")
+	   .to("amqp://queue:railyard-xml");
 	  
   }
   
