@@ -1,0 +1,28 @@
+# Servlet Container & Health Setup
+server:
+  address: 0.0.0.0
+management:
+  endpoints:
+    enabled: false
+    health:
+      enabled: true
+
+# AMQPHub
+amqphub:
+  amqp10jms:
+    pool:
+      enabled: true
+    remote-url: amqp://camel-queue-traindata-amqp-0-svc.demo:5672
+    username: admin
+    password: admin
+
+# Camel Spring Boot
+camel:
+  springboot:
+    name: bnsf-msg-processor
+
+# Logging
+logging:
+  config: classpath:logback.xml
+  level:
+    com.bnsf.examples: INFO

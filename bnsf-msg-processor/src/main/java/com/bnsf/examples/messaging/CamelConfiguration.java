@@ -24,12 +24,8 @@ public class CamelConfiguration extends RouteBuilder {
   @Override
   public void configure() throws Exception {
 	
-	  from("cxf:/railyard?serviceClass=com.bnsf.examples.railyard.RailyardPortType&loggingFeatureEnabled=true")
-	  .setBody().simple("${body[0].value}")
-	  .log("set message body up: [ ${body} ]")
-	  .marshal().jaxb()
-	  .log("finished jaxb: [ ${body} ]")
-	   .to("amqp://queue:railyard-xml");
+	  from("cxf:/railyard?serviceClass=com.bnsf.examples.railyard.RailyardPortType&loggingFeatureEnabled=true&dataFormat=PAYLOAD")
+	  .to(ExchangePattern.InOnly, "jms://queue:raildata-xml?connectionFactory=#pooledJmsConnectionFactory");
 	  
   }
   
