@@ -1,1 +1,76 @@
-_NOTHING YET
+#################################
+### README                    ###
+#################################
+
+Code Ready Workspaces
+-------------------------------
+
+shft + cmd + P -- MAC
+
+
+OpenShift PreReqs
+---------------------------
+1) AMQ Operator Install
+A. Choose Namespace Name - we typically use "demo"
+B. Login to OCP Console as Cluster ADMIN and install AMQ Artemis Operator in namespace
+C. Now configure the broker
+ Select create INstance of AMQ Artemis and replace the yaml with this:
+
+kind: ActiveMQArtemis
+metadata:
+  name: camel-queue
+  namespace: demo
+spec:
+  acceptors:
+    - expose: true
+      name: raildata-openwire
+      port: 61616
+      protocol: Core
+    - expose: true
+      name: raildata-amqp
+      port: 5672
+      protocol: AMQP
+  deploymentPlan:
+    image: 'registry.redhat.io/amq7/amq-broker-lts-rhel7:7.4'
+    size: 1
+
+The Following variables can be adjusted but if you do, 
+you will need to update the bnsf-msg-processor so the camel process can 
+find the queue that the soap service writes to and it will affect the config map below.
+
+broker name: camel-queue
+acceptor name: raildata-amqp
+
+The way that the broker builds the route (when you set expose=true) is to use the broker name + acceptor name + counter + "-svc-rte"
+
+D. Create the address -- select installed operators and replace yaml with this:
+
+apiVersion: broker.amq.io/v2alpha1
+kind: ActiveMQArtemisAddress
+metadata:
+  name: ex-aaoaddress
+  namespace: demo
+spec:
+  addressName: raildata-xml
+  queueName: raildata-xml
+  routingType: anycast
+
+you change the metadata name to whatever but if you change the spec information, you will have to change the camel route again.
+
+
+E. now create a config map
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: broker-info
+  namespace: demo
+data:
+  AMQPHUB_AMQP10JMS_POOL_ENABLED: 'true'
+  AMQPHUB_AMQP10JMS_REMOTE-URL: 'amqp://camel-queue-traindata-amqp-0-svc:5672'
+
+
+2) User must have rights to namespace that hosts amq and if you use one namespace for the app and one namespace for the broker,
+then you will need to add the namespace as a suffix like follows:
+ 'amqp://camel-queue-traindata-amqp-0-svc.demo:5672'
+
+
